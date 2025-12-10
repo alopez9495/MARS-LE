@@ -183,22 +183,21 @@ public class PokemonAssembly extends CustomAssembly{
                                 RegisterFile.updateRegister(reg, val | imm);
                             }
                         }));
-        // 9) CLEARSTATUS: resetstatus $s0, imm
-        // I-format: opcode = 001101
+        // 9) CLEARSTATUS: resetstatus $s0
+        // R-format: opcode = 000000 funct = 001101
         instructionList.add(
-                new BasicInstruction("resetstatus $s0, -100",
-                        "Clear status bits: R[$s0] &= ~imm",
-                        BasicInstructionFormat.I_FORMAT,
-                        "001101 fffff 00000 ssssssssssssssss",
+                new BasicInstruction("resetstatus $s0",
+                        "Set HP to zero (fainted): R[$s0] = 0",
+                        BasicInstructionFormat.R_FORMAT,
+                        "000000 fffff sssss ddddd 00000 001101",
                         new SimulationCode()
                         {
                             public void simulate(ProgramStatement statement) throws ProcessingException
                             {
                                 int[] operands = statement.getOperands();
                                 int reg = operands[0];
-                                int imm = operands[1] << 16 >> 16; // sign-extend 16-bit immediate here
-                                int val = RegisterFile.getValue(reg);
-                                RegisterFile.updateRegister(reg, val & ~imm);
+                                RegisterFile.updateRegister(reg, 0);
+                                SystemIO.printString("Pokemon's status is back to normal!" + "\n");
                             }
                         }));
         // 10) TEMPPOWER: temppower $s2, $t2 (temp power = P1 Attack)
